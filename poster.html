@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>초등학교 1학년 주제별 한글 단어장 (A4 포스터)</title>
+  <!-- 가독성이 뛰어난 구글 한글 폰트 적용 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ========================================================
+       1. 인쇄 및 기본 페이지 스타일 (A4 Portrait 표준 규격)
+       A4 크기: 210mm x 297mm
+       ======================================================== */
+    @page {
+      size: A4 portrait;
+      margin: 8mm 10mm; /* 상하 8mm, 좌우 10mm 여백 */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #F1F5F9;
+      color: #1E293B;
+      padding: 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    /* 화면 상단 안내 및 인쇄 조작 바 (인쇄 시 자동 숨김) */
+    .screen-toolbar {
+      background: white;
+      padding: 12px 24px;
+      border-radius: 9999px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 10px;
+      z-index: 100;
+    }
+
+    .toolbar-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .print-btn {
+      background: #3B82F6;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+      transition: all 0.2s;
+    }
+
+    .print-btn:hover {
+      background: #2563EB;
+      transform: translateY(-1px);
+    }
+
+    /* ========================================================
+       2. A4 한 장 단위 컨테이너 (.a4-page)
+       한 페이지에 한 주제의 모든 단어(25~32개)가 정확히 들어감
+       ======================================================== */
+    .a4-page {
+      width: 210mm;
+      height: 297mm;
+      max-height: 297mm;
+      background: #FFFFFF;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      border-radius: 4px;
+      padding: 10mm 11mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    /* 인쇄 시 화면 그림자 제거 및 정확한 규격 유지 */
+    @media print {
+      body {
+        background: transparent !important;
+        padding: 0 !important;
+        gap: 0 !important;
+      }
+      .screen-toolbar {
+        display: none !important;
+      }
+      .a4-page {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        padding: 8mm 10mm !important;
+      }
+    }
+
+    /* ========================================================
+       3. 페이지 상단 헤더 (주제명, 인적사항 란)
+       ======================================================== */
+    .page-header {
+      border-bottom: 2.5px solid #E2E8F0;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topic-badge-icon {
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+
+    .topic-title-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topic-sub {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #64748B;
+      letter-spacing: -0.3px;
+    }
+
+    .topic-title {
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #0F172A;
+      letter-spacing: -0.5px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #F8FAFC;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .user-info-field {
+      border-bottom: 1.5px solid #94A3B8;
+      display: inline-block;
+      width: 75px;
+      margin-left: 4px;
+    }
+
+    /* ========================================================
+       4. 단어 격자 그리드 (4열 균등 배치)
+       28개: 4열 x 7행, 32개: 4열 x 8행
+       ======================================================== */
+    .words-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin: 4px 0 8px 0;
+      align-content: stretch;
+    }
+
+    /* 단어 카드 셀 아이템 */
+    .word-card-cell {
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #FAFAFA;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .word-card-cell:nth-child(even) {
+      background: #FFFFFF;
+    }
+
+    .cell-emoji {
+      font-size: 1.8rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .cell-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cell-word {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #1E293B;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cell-word.long-text {
+      font-size: 1.05rem;
+    }
+
+    .cell-meta {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .tag-batchim {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      line-height: 1.3;
+    }
+
+    .tag-batchim.has {
+      background: #DBEAFE;
+      color: #1E40AF;
+    }
+
+    .tag-batchim.none {
+      background: #DCFCE7;
+      color: #166534;
+    }
+
+    .cell-index {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #94A3B8;
+      margin-left: auto;
+    }
+
+    .word-card-cell.empty {
+      border: 1.5px dashed #E2E8F0;
+      background: #FCFDFF;
+      visibility: hidden;
+    }
+
+    /* ========================================================
+       5. 페이지 하단 푸터 (칭찬 도장 란, 페이지 번호)
+       ======================================================== */
+    .page-footer {
+      border-top: 1.5px solid #E2E8F0;
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #64748B;
+    }
+
+    .footer-stamp-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: #EA580C;
+    }
+
+    .stamp-box {
+      width: 26px;
+      height: 26px;
+      border: 1.5px dashed #F97316;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    .page-number-box {
+      font-weight: 700;
+      color: #475569;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 화면 전용 툴바 (인쇄 시 자동 숨김) -->
+  <aside class="screen-toolbar">
+    <div class="toolbar-title">📄 초등 1학년 주제별 단어 포스터 (A4 총 8장)</div>
+    <button class="print-btn" onclick="window.print()">🖨️ PDF로 저장 / 인쇄하기</button>
+  </aside>
+
+  <!-- 8개 주제의 A4 페이지가 자바스크립트로 자동 렌더링되는 영역 -->
+  <main id="pagesContainer"></main>
+
+  <!-- 기존 219개 단어 데이터셋 로드 -->
+  <script src="words.js"></script>
+
+  <script>
+    /* ========================================================
+       6. 주제별 페이지 생성 스크립트
+       8개 주제를 순회하며 1페이지당 1개 주제를 완벽하게 배치
+       ======================================================== */
+    const TOPICS_CONFIG = [
+      { name: "가족과 사람", icon: "👨‍👩‍👧", color: "#FF6B6B", desc: "사랑하는 우리 가족과 고마운 이웃들" },
+      { name: "동물과 곤충", icon: "🐶", color: "#4D96FF", desc: "숲속과 들판에서 만나는 귀여운 동물 친구들" },
+      { name: "과일과 채소", icon: "🍎", color: "#10B981", desc: "알록달록 맛도 좋고 몸에도 좋은 과일과 채소" },
+      { name: "학교와 학용품", icon: "🏫", color: "#8B5CF6", desc: "즐거운 1학년 학교생활과 책상 위 학용품" },
+      { name: "우리 몸과 옷", icon: "👀", color: "#F59E0B", desc: "소중한 나의 몸과 계절마다 입는 예쁜 옷" },
+      { name: "자연과 날씨", icon: "🌿", color: "#14B8A6", desc: "파란 하늘과 계절 따라 변화하는 아름다운 자연" },
+      { name: "탈것과 동네", icon: "🚗", color: "#EC4899", desc: "안전하게 타고 다니는 탈것과 우리 동네 풍경" },
+      { name: "음식과 생활", icon: "🍚", color: "#F97316", desc: "매일매일 맛있게 먹는 음식과 바른 생활 도구" }
+    ];
+
+    const container = document.getElementById('pagesContainer');
+    const allWords = (typeof FLASHCARD_WORDS !== 'undefined') ? FLASHCARD_WORDS : [];
+
+    // 8개 주제를 순회하며 각각 A4 1페이지 생성
+    TOPICS_CONFIG.forEach((topic, pageIndex) => {
+      // 해당 주제에 속한 단어들 추출
+      const topicWords = allWords.filter(w => w.category === topic.name);
+      const totalWords = topicWords.length;
+
+      // A4 한 장 컨테이너 생성
+      const pageDiv = document.createElement('section');
+      pageDiv.className = 'a4-page';
+
+      // 1) 상단 헤더 HTML
+      const headerHTML = `
+        <header class="page-header">
+          <div class="header-left">
+            <span class="topic-badge-icon">${topic.icon}</span>
+            <div class="topic-title-group">
+              <span class="topic-sub">초등학교 1학년 필수 단어장 (${totalWords}낱말)</span>
+              <h2 class="topic-title" style="color: ${topic.color}">${topic.name}</h2>
+            </div>
+          </div>
+          <div class="header-right">
+            <span>1학년</span>
+            <span><span class="user-info-field"></span> 반</span>
+            <span>이름: <span class="user-info-field" style="width: 85px"></span></span>
+          </div>
+        </header>
+      `;
+
+      // 2) 4열 단어 격자 그리드 HTML
+      let gridHTML = '<div class="words-grid">';
+      topicWords.forEach((item, idx) => {
+        const isLong = item.word.length >= 3;
+        gridHTML += `
+          <div class="word-card-cell">
+            <div class="cell-emoji">${item.emoji}</div>
+            <div class="cell-info">
+              <div class="cell-word ${isLong ? 'long-text' : ''}">${item.word}</div>
+              <div class="cell-meta">
+                <span class="tag-batchim ${item.hasBatchim ? 'has' : 'none'}">
+                  ${item.hasBatchim ? '받침있음' : '받침없음'}
+                </span>
+                <span class="cell-index">${idx + 1}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      // 4열 격자 줄을 맞추기 위한 빈 셀 채우기
+      const remainder = totalWords % 4;
+      if (remainder !== 0) {
+        const emptyCount = 4 - remainder;
+        for (let e = 0; e < emptyCount; e++) {
+          gridHTML += '<div class="word-card-cell empty"></div>';
+        }
+      }
+      gridHTML += '</div>';
+
+      // 3) 하단 푸터 HTML (칭찬 도장 + 페이지 번호)
+      const footerHTML = `
+        <footer class="page-footer">
+          <div class="footer-stamp-area">
+            <div class="stamp-box">⭐</div>
+            <span>${topic.desc} | 참 잘했어요! 도장 쾅!</span>
+          </div>
+          <div class="page-number-box">
+            <strong>${pageIndex + 1}</strong> / ${TOPICS_CONFIG.length} 쪽
+          </div>
+        </footer>
+      `;
+
+      pageDiv.innerHTML = headerHTML + gridHTML + footerHTML;
+      container.appendChild(pageDiv);
+    });
+  </script>
+</body>
+</html>

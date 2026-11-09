@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>초등학교 1학년 맞춤형 한글 단어 플래시 카드</title>
+  <!-- 구글 폰트: 또박또박 읽기 쉬운 한글 폰트 적용 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ========================================================
+       1. 기본 스타일 및 테마 변수 설정
+       초등학교 1학년 어린이의 눈높이에 맞춘 따뜻하고 밝은 색감
+       ======================================================== */
+    :root {
+      --primary: #FF6B6B;        /* 따뜻한 코랄 레드 */
+      --primary-light: #FFE3E3;  /* 연한 핑크 */
+      --secondary: #4D96FF;      /* 맑은 하늘색 */
+      --secondary-light: #E8F1FF;/* 연한 하늘색 */
+      --accent: #FFD93D;         /* 산뜻한 노랑 */
+      --accent-light: #FFF9DB;   /* 연한 노랑 */
+      --success: #6BCB77;        /* 상쾌한 초록 */
+      --bg-gradient: linear-gradient(135deg, #FFF9F4 0%, #EEF7FF 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #2D3748;
+      --text-muted: #718096;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 16px 32px -8px rgba(0, 0, 0, 0.12);
+      --radius-lg: 24px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      user-select: none;
+    }
+
+    /* 상단 헤더 영역 */
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      max-width: 860px;
+      width: 100%;
+    }
+
+    .app-title {
+      font-family: 'Gaegu', cursive;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #FF5252;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .app-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* 필터 및 조작 바 */
+    .controls-panel {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+      max-width: 860px;
+      width: 100%;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      backdrop-filter: blur(8px);
+    }
+
+    /* 카테고리 칩 버튼 */
+    .category-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .chip-btn {
+      border: 2px solid transparent;
+      background: #F1F5F9;
+      color: #475569;
+      padding: 8px 14px;
+      border-radius: 9999px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip-btn:hover {
+      background: #E2E8F0;
+      transform: translateY(-1px);
+    }
+
+    .chip-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+    }
+
+    /* 보조 필터 옵션들 (받침 여부, 즐겨찾기, 검색창) */
+    .sub-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #EDF2F7;
+      padding-top: 12px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .toggle-btn {
+      border: 1.5px solid #CBD5E1;
+      background: white;
+      color: #475569;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn.active {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      color: white;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 160px;
+      max-width: 260px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 12px 8px 34px;
+      border-radius: 8px;
+      border: 1.5px solid #CBD5E1;
+      font-size: 0.88rem;
+      font-family: inherit;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--secondary);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+      color: #94A3B8;
+    }
+
+    /* ========================================================
+       2. 메인 플래시 카드 영역 (3D 플립 효과)
+       ======================================================== */
+    .card-stage {
+      perspective: 1200px;
+      width: 100%;
+      max-width: 440px;
+      height: 400px;
+      margin: 10px 0 20px 0;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .card-flipper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-stage.flipped .card-flipper {
+      transform: rotateY(180deg);
+    }
+
+    /* 카드 앞면 및 뒷면 공통 스타일 */
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: var(--radius-lg);
+      background: var(--card-bg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 4px solid #FFEBEB;
+    }
+
+    /* 카드 앞면 (Front) - 글씨 우선 & 그림 힌트 모드 */
+    .card-front {
+      background: linear-gradient(to bottom, #FFFFFF 0%, #FFF8F6 100%);
+    }
+
+    .card-front-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge-wrap {
+      display: flex;
+      gap: 6px;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      display: inline-block;
+    }
+
+    .badge-category {
+      background: var(--secondary-light);
+      color: #1E40AF;
+    }
+
+    .badge-batchim {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .favorite-btn {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: #CBD5E1;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .favorite-btn.active {
+      color: #FBBF24;
+      transform: scale(1.15);
+    }
+
+    /* 앞면 메인 단어 및 힌트 영역 */
+    .card-front-main {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: auto 0;
+    }
+
+    .word-text {
+      font-size: 4.2rem;
+      font-weight: 900;
+      color: #1E293B;
+      letter-spacing: 2px;
+      line-height: 1.1;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    /* 그림 힌트 컨테이너 */
+    .hint-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 90px;
+    }
+
+    .hint-trigger-btn {
+      background: var(--accent-light);
+      border: 2px dashed #F59E0B;
+      color: #B45309;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 3px 8px rgba(245, 158, 11, 0.2);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .hint-trigger-btn:hover {
+      background: #FEF08A;
+      transform: scale(1.06);
+      box-shadow: 0 6px 14px rgba(245, 158, 11, 0.3);
+    }
+
+    .hint-trigger-btn:active {
+      transform: scale(0.96);
+    }
+
+    .revealed-hint-box {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      animation: popBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .revealed-hint-box.show {
+      display: flex;
+    }
+
+    .word-emoji {
+      font-size: 4.4rem;
+      line-height: 1;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
+
+    .hide-hint-link {
+      font-size: 0.78rem;
+      color: #94A3B8;
+      background: none;
+      border: none;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 2px 6px;
+      margin-top: 2px;
+    }
+
+    .hide-hint-link:hover {
+      color: #64748B;
+    }
+
+    @keyframes popBounce {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      70% {
+        transform: scale(1.15);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .card-front-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tts-speaker-btn {
+      background: var(--primary-light);
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tts-speaker-btn:hover {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.08);
+    }
+
+    .flip-guide {
+      font-size: 0.85rem;
+      color: #94A3B8;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* 카드 뒷면 (Back) */
+    .card-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(to bottom, #FFFFFF 0%, #F0FDF4 100%);
+      border-color: #DCFCE7;
+    }
+
+    .card-back-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px dashed #E2E8F0;
+      padding-bottom: 12px;
+    }
+
+    .back-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .back-word {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #0F172A;
+    }
+
+    .back-emoji {
+      font-size: 2.2rem;
+    }
+
+    .card-back-body {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: auto 0;
+    }
+
+    .meaning-box {
+      background: #FFFFFF;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border-left: 5px solid var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .box-label {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .box-content {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #334155;
+    }
+
+    .example-box {
+      background: #FFFFFF;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border-left: 5px solid var(--secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .example-box .box-label {
+      color: var(--secondary);
+    }
+
+    .example-box .box-content {
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: #1E293B;
+    }
+
+    .breakdown-box {
+      background: #F8FAFC;
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .breakdown-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #64748B;
+    }
+
+    .breakdown-letters {
+      font-family: 'Gaegu', cursive;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0F172A;
+      letter-spacing: 1px;
+    }
+
+    /* ========================================================
+       3. 네비게이션 및 학습 진행 바
+       ======================================================== */
+    .nav-container {
+      max-width: 440px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #64748B;
+      padding: 0 4px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: #E2E8F0;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 9999px;
+      transition: width 0.3s ease;
+    }
+
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      height: 52px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-prev {
+      background: white;
+      color: #334155;
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid #E2E8F0;
+    }
+
+    .btn-prev:hover {
+      background: #F8FAFC;
+      border-color: #CBD5E1;
+    }
+
+    .btn-next {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 6px 16px rgba(255, 107, 107, 0.35);
+    }
+
+    .btn-next:hover {
+      background: #FA5252;
+      transform: translateY(-2px);
+    }
+
+    .sub-action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .tool-btn {
+      background: white;
+      border: 1.5px solid #E2E8F0;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .tool-btn:hover {
+      background: #F1F5F9;
+    }
+
+    .tool-btn.active {
+      background: #FEF3C7;
+      border-color: #F59E0B;
+      color: #92400E;
+    }
+
+    /* 키보드 단축키 안내 팁 */
+    .keyboard-hint {
+      font-size: 0.82rem;
+      color: #64748B;
+      text-align: center;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .keyboard-hint kbd {
+      background: #E2E8F0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    /* 인쇄 및 PDF 다운로드 배너 */
+    .print-banner {
+      background: #EFF6FF;
+      border: 1.5px dashed #60A5FA;
+      border-radius: var(--radius-sm);
+      padding: 14px 20px;
+      max-width: 860px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .print-banner-text {
+      font-size: 0.95rem;
+      color: #1E40AF;
+      font-weight: 600;
+    }
+
+    .print-banner-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .print-start-btn {
+      background: var(--secondary);
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 9px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 8px rgba(77, 150, 255, 0.25);
+      transition: background 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .print-start-btn:hover {
+      background: #3B82F6;
+    }
+
+    .pdf-download-btn {
+      background: #10B981;
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 9px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.25);
+      transition: background 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pdf-download-btn:hover {
+      background: #059669;
+    }
+
+    /* ========================================================
+       4. A4 낱장 인쇄용 스타일 (@media print)
+       ======================================================== */
+    #print-section {
+      display: none;
+    }
+
+    @media print {
+      body {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      header, .controls-panel, .card-stage, .nav-container, .print-banner {
+        display: none !important;
+      }
+      #print-section {
+        display: block !important;
+        width: 100%;
+      }
+      .print-page {
+        page-break-after: always;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        gap: 12px;
+        padding: 10mm;
+        box-sizing: border-box;
+        height: 297mm;
+      }
+      .print-card-item {
+        border: 2px dashed #94A3B8;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: white;
+        box-sizing: border-box;
+      }
+      .print-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11pt;
+        font-weight: bold;
+        color: #475569;
+      }
+      .print-card-center {
+        text-align: center;
+        margin: 8px 0;
+      }
+      .print-emoji {
+        font-size: 32pt;
+        line-height: 1;
+      }
+      .print-word {
+        font-size: 26pt;
+        font-weight: 900;
+        color: black;
+        margin-top: 4px;
+      }
+      .print-card-bottom {
+        border-top: 1px dotted #CBD5E1;
+        padding-top: 6px;
+        font-size: 9.5pt;
+        line-height: 1.35;
+        color: #334155;
+      }
+      .print-example {
+        font-weight: bold;
+        color: #1E40AF;
+        margin-top: 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. 앱 상단 타이틀 영역 -->
+  <header>
+    <h1 class="app-title">
+      <span>🎒</span> 초등 1학년 한글 단어 카드 <span>✨</span>
+    </h1>
+    <p class="app-subtitle">글씨를 먼저 읽어보고, 💡 힌트 버튼으로 그림을 확인해요!</p>
+  </header>
+
+  <!-- 2. 필터 및 검색 컨트롤 패널 -->
+  <section class="controls-panel">
+    <!-- 주제별 칩 버튼 -->
+    <div class="category-chips" id="categoryChips">
+      <button class="chip-btn active" data-category="ALL">전체 보기 (219)</button>
+      <button class="chip-btn" data-category="가족과 사람">👨‍👩‍👧 가족과 사람</button>
+      <button class="chip-btn" data-category="동물과 곤충">🐶 동물과 곤충</button>
+      <button class="chip-btn" data-category="과일과 채소">🍎 과일과 채소</button>
+      <button class="chip-btn" data-category="학교와 학용품">🏫 학교와 학용품</button>
+      <button class="chip-btn" data-category="우리 몸과 옷">👀 우리 몸과 옷</button>
+      <button class="chip-btn" data-category="자연과 날씨">🌿 자연과 날씨</button>
+      <button class="chip-btn" data-category="탈것과 동네">🚗 탈것과 동네</button>
+      <button class="chip-btn" data-category="음식과 생활">🍚 음식과 생활</button>
+    </div>
+
+    <!-- 하위 필터 (받침 여부, 즐겨찾기, 검색창) -->
+    <div class="sub-filters">
+      <div class="filter-group">
+        <button class="toggle-btn active" id="btnBatchimAll">받침 전체</button>
+        <button class="toggle-btn" id="btnBatchimNone">🟢 받침 없음</button>
+        <button class="toggle-btn" id="btnBatchimHas">🔵 받침 있음</button>
+        <button class="toggle-btn" id="btnFavorites">⭐ 별표 단어만</button>
+      </div>
+
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="단어 검색 (예: 강아지, 학교)">
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 메인 인터랙티브 플래시 카드 -->
+  <main class="card-stage" id="cardStage" title="카드를 클릭하면 앞뒤로 뒤집힙니다">
+    <div class="card-flipper">
+      
+      <!-- 카드 앞면 (Front) : 글씨 우선 표시 + 그림 힌트 버튼 -->
+      <div class="card-face card-front">
+        <div class="card-front-top">
+          <div class="badge-wrap">
+            <span class="badge badge-category" id="frontCategory">동물과 곤충</span>
+            <span class="badge badge-batchim" id="frontBatchim">받침 있음</span>
+          </div>
+          <button class="favorite-btn" id="favoriteToggleBtn" title="별표 단어로 저장">★</button>
+        </div>
+
+        <!-- 중앙 단어 & 힌트 영역 -->
+        <div class="card-front-main">
+          <!-- 1단계: 글씨를 가장 먼저 크게 보여줍니다 -->
+          <div class="word-text" id="frontWord">강아지</div>
+
+          <!-- 2단계: 그림 힌트 컨테이너 (버튼 클릭 시 그림 표시) -->
+          <div class="hint-container">
+            <!-- 힌트 열기 버튼 (기본 상태) -->
+            <button class="hint-trigger-btn" id="hintTriggerBtn" type="button" title="그림 힌트 보기 (단축키: H)">
+              <span>💡</span>
+              <span>그림 힌트 보기</span>
+            </button>
+
+            <!-- 힌트 열림 상태 (그림 이모지와 숨기기 링크) -->
+            <div class="revealed-hint-box" id="revealedHintBox">
+              <div class="word-emoji" id="frontEmoji">🐶</div>
+              <button class="hide-hint-link" id="hideHintBtn" type="button">그림 숨기기</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-front-bottom">
+          <button class="tts-speaker-btn" id="ttsBtn" title="또박또박 발음 듣기">🔊</button>
+          <div class="flip-guide">
+            <span>👆 톡 누르면 뒷면 설명 보기</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 카드 뒷면 (Back) -->
+      <div class="card-face card-back">
+        <div class="card-back-header">
+          <div class="back-title-group">
+            <span class="back-emoji" id="backEmoji">🐶</span>
+            <span class="back-word" id="backWord">강아지</span>
+          </div>
+          <button class="tts-speaker-btn" id="backTtsBtn" title="예문까지 함께 소리 듣기">🔊</button>
+        </div>
+
+        <div class="card-back-body">
+          <div class="meaning-box">
+            <div class="box-label">💡 쉬운 뜻풀이</div>
+            <div class="box-content" id="backMeaning">꼬리를 흔들며 멍멍 짖는 귀여운 동물</div>
+          </div>
+
+          <div class="example-box">
+            <div class="box-label">📖 1학년 맞춤 예문</div>
+            <div class="box-content" id="backExample">강아지가 꼬리를 살랑살랑 흔들어요.</div>
+          </div>
+
+          <div class="breakdown-box">
+            <span class="breakdown-label">🧩 글자 조각</span>
+            <span class="breakdown-letters" id="backBreakdown">ㄱ + ㅏ + ㅇ | ㅇ + ㅏ | ㅈ + ㅣ</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- 4. 네비게이션 및 학습 조작 바 -->
+  <section class="nav-container">
+    <div class="progress-info">
+      <span id="currentStatusText">단어 카드 1 / 219</span>
+      <span id="filterStatusText">전체 단어</span>
+    </div>
+
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressBarFill"></div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="nav-btn btn-prev" id="btnPrev">◀ 이전 단어</button>
+      <button class="nav-btn btn-next" id="btnNext">다음 단어 ▶</button>
+    </div>
+
+    <div class="sub-action-buttons">
+      <button class="tool-btn" id="btnShuffle">🎲 순서 섞기</button>
+      <button class="tool-btn" id="btnAutoPlay">▶ 자동 넘김 (4초)</button>
+      <button class="tool-btn" id="btnResetOrder">🔄 처음 순서로</button>
+    </div>
+
+    <p class="keyboard-hint">
+      💡 단축키: <kbd>◀</kbd> <kbd>▶</kbd> 단어 넘김 | <kbd>Space</kbd> 뒤집기 | <kbd>H</kbd> 그림 힌트 | <kbd>Enter</kbd> 소리 듣기
+    </p>
+  </section>
+
+  <!-- 5. A4 종이 인쇄 및 주제별 PDF 다운로드 배너 -->
+  <aside class="print-banner">
+    <div class="print-banner-text">
+      🖨️ <strong>종이 자료가 필요하신가요?</strong> 원하는 형식으로 바로 인쇄하거나 PDF를 열어보세요!
+    </div>
+    <div class="print-banner-buttons">
+      <a href="poster.html" target="_blank" class="print-start-btn" style="background: #8B5CF6;">
+        👀 주제별 A4 포스터 보기 / PDF 인쇄
+      </a>
+      <button class="print-start-btn" id="btnPrint">
+        ✂️ 오려쓰는 낱장 카드 인쇄
+      </button>
+    </div>
+  </aside>
+
+  <!-- 6. 인쇄 시에만 활성화되는 A4 용지 레이아웃 컨테이너 -->
+  <div id="print-section"></div>
+
+  <!-- 단어 데이터셋 로드 (로컬에서도 CORS 에러 없이 즉시 동작하도록 words.js 사용) -->
+  <script src="words.js"></script>
+
+  <script>
+    /* ========================================================
+       7. 자바스크립트 로직 (초보 교육자를 위한 상세 한글 주석)
+       ======================================================== */
+
+    // 1) 상태 변수 정의
+    let allWords = (typeof FLASHCARD_WORDS !== 'undefined') ? FLASHCARD_WORDS : [];
+    let filteredWords = [...allWords];
+    let currentIndex = 0;
+    let isFlipped = false;
+    let isHintRevealed = false;
+    let autoPlayInterval = null;
+    let favoritesSet = new Set(JSON.parse(localStorage.getItem('korean_flashcard_favorites') || '[]'));
+
+    // 필터 상태
+    let selectedCategory = 'ALL';
+    let selectedBatchim = 'ALL';
+    let showFavoritesOnly = false;
+    let searchQuery = '';
+
+    // DOM 요소 캐싱
+    const cardStage = document.getElementById('cardStage');
+    const frontWord = document.getElementById('frontWord');
+    const frontEmoji = document.getElementById('frontEmoji');
+    const frontCategory = document.getElementById('frontCategory');
+    const frontBatchim = document.getElementById('frontBatchim');
+    const favoriteToggleBtn = document.getElementById('favoriteToggleBtn');
+
+    // 힌트 관련 DOM 요소
+    const hintTriggerBtn = document.getElementById('hintTriggerBtn');
+    const revealedHintBox = document.getElementById('revealedHintBox');
+    const hideHintBtn = document.getElementById('hideHintBtn');
+
+    const backWord = document.getElementById('backWord');
+    const backEmoji = document.getElementById('backEmoji');
+    const backMeaning = document.getElementById('backMeaning');
+    const backExample = document.getElementById('backExample');
+    const backBreakdown = document.getElementById('backBreakdown');
+
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const btnShuffle = document.getElementById('btnShuffle');
+    const btnAutoPlay = document.getElementById('btnAutoPlay');
+    const btnResetOrder = document.getElementById('btnResetOrder');
+    const btnPrint = document.getElementById('btnPrint');
+
+    const ttsBtn = document.getElementById('ttsBtn');
+    const backTtsBtn = document.getElementById('backTtsBtn');
+
+    const currentStatusText = document.getElementById('currentStatusText');
+    const filterStatusText = document.getElementById('filterStatusText');
+    const progressBarFill = document.getElementById('progressBarFill');
+
+    const searchInput = document.getElementById('searchInput');
+    const categoryChips = document.getElementById('categoryChips');
+    const btnBatchimAll = document.getElementById('btnBatchimAll');
+    const btnBatchimNone = document.getElementById('btnBatchimNone');
+    const btnBatchimHas = document.getElementById('btnBatchimHas');
+    const btnFavorites = document.getElementById('btnFavorites');
+
+    // 2) 힌트 표시 상태 UI 업데이트 함수
+    function updateHintUI() {
+      if (isHintRevealed) {
+        hintTriggerBtn.style.display = 'none';
+        revealedHintBox.classList.add('show');
+      } else {
+        hintTriggerBtn.style.display = 'inline-flex';
+        revealedHintBox.classList.remove('show');
+      }
+    }
+
+    // 3) 힌트 토글 함수
+    function toggleHint() {
+      if (filteredWords.length === 0) return;
+      isHintRevealed = !isHintRevealed;
+      updateHintUI();
+    }
+
+    // 4) 단어 카드 렌더링 함수
+    function renderCard() {
+      if (filteredWords.length === 0) {
+        frontWord.innerText = "단어 없음";
+        frontEmoji.innerText = "🔍";
+        frontCategory.innerText = "없음";
+        frontBatchim.innerText = "-";
+        backWord.innerText = "단어 없음";
+        backMeaning.innerText = "선택하신 조건에 해당하는 단어가 없습니다.";
+        backExample.innerText = "필터를 다시 변경해 보세요.";
+        backBreakdown.innerText = "-";
+        currentStatusText.innerText = "0 / 0";
+        progressBarFill.style.width = "0%";
+        isHintRevealed = false;
+        updateHintUI();
+        return;
+      }
+
+      if (currentIndex < 0) currentIndex = 0;
+      if (currentIndex >= filteredWords.length) currentIndex = filteredWords.length - 1;
+
+      const item = filteredWords[currentIndex];
+
+      frontWord.innerText = item.word;
+      frontEmoji.innerText = item.emoji;
+      frontCategory.innerText = item.category;
+      frontBatchim.innerText = item.hasBatchim ? "받침 있음" : "받침 없음";
+      frontBatchim.style.background = item.hasBatchim ? "#DBEAFE" : "#DCFCE7";
+      frontBatchim.style.color = item.hasBatchim ? "#1E40AF" : "#166534";
+
+      isHintRevealed = false;
+      updateHintUI();
+
+      const isFav = favoritesSet.has(item.id);
+      favoriteToggleBtn.classList.toggle('active', isFav);
+
+      backWord.innerText = item.word;
+      backEmoji.innerText = item.emoji;
+      backMeaning.innerText = item.meaning;
+      backExample.innerText = item.example;
+      backBreakdown.innerText = item.breakdown;
+
+      if (isFlipped) {
+        isFlipped = false;
+        cardStage.classList.remove('flipped');
+      }
+
+      const currentNo = currentIndex + 1;
+      const totalNo = filteredWords.length;
+      currentStatusText.innerText = `단어 카드 ${currentNo} / ${totalNo}`;
+      const percentage = (currentNo / totalNo) * 100;
+      progressBarFill.style.width = `${percentage}%`;
+    }
+
+    // 5) 단어 필터링 적용 함수
+    function applyFilters() {
+      filteredWords = allWords.filter(item => {
+        if (selectedCategory !== 'ALL' && item.category !== selectedCategory) return false;
+        if (selectedBatchim === 'NONE' && item.hasBatchim) return false;
+        if (selectedBatchim === 'HAS' && !item.hasBatchim) return false;
+        if (showFavoritesOnly && !favoritesSet.has(item.id)) return false;
+        if (searchQuery.trim() !== '') {
+          const q = searchQuery.trim().toLowerCase();
+          const matchWord = item.word.toLowerCase().includes(q);
+          const matchMeaning = item.meaning.toLowerCase().includes(q);
+          if (!matchWord && !matchMeaning) return false;
+        }
+        return true;
+      });
+
+      let statusLabel = selectedCategory === 'ALL' ? '전체' : selectedCategory;
+      if (selectedBatchim === 'NONE') statusLabel += ' (받침 없음)';
+      if (selectedBatchim === 'HAS') statusLabel += ' (받침 있음)';
+      if (showFavoritesOnly) statusLabel += ' ★별표단어';
+      filterStatusText.innerText = statusLabel;
+
+      currentIndex = 0;
+      renderCard();
+    }
+
+    // 6) 카드 뒤집기
+    function toggleFlip() {
+      if (filteredWords.length === 0) return;
+      isFlipped = !isFlipped;
+      cardStage.classList.toggle('flipped', isFlipped);
+    }
+
+    // 7) 이전 / 다음 단어로 이동
+    function goPrev() {
+      if (filteredWords.length === 0) return;
+      currentIndex = (currentIndex > 0) ? currentIndex - 1 : filteredWords.length - 1;
+      renderCard();
+    }
+
+    function goNext() {
+      if (filteredWords.length === 0) return;
+      currentIndex = (currentIndex < filteredWords.length - 1) ? currentIndex + 1 : 0;
+      renderCard();
+    }
+
+    // 8) 한국어 음성 읽기 (TTS)
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        alert("현재 사용하시는 웹 브라우저는 음성 읽기를 지원하지 않습니다.");
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ko-KR';
+      utterance.rate = 0.85;
+      utterance.pitch = 1.05;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // 9) 즐겨찾기 토글
+    function toggleFavorite() {
+      if (filteredWords.length === 0) return;
+      const curItem = filteredWords[currentIndex];
+      if (favoritesSet.has(curItem.id)) {
+        favoritesSet.delete(curItem.id);
+      } else {
+        favoritesSet.add(curItem.id);
+      }
+      localStorage.setItem('korean_flashcard_favorites', JSON.stringify([...favoritesSet]));
+      renderCard();
+    }
+
+    // 10) 순서 섞기 (랜덤 셔플)
+    function shuffleWords() {
+      if (filteredWords.length <= 1) return;
+      for (let i = filteredWords.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [filteredWords[i], filteredWords[j]] = [filteredWords[j], filteredWords[i]];
+      }
+      currentIndex = 0;
+      renderCard();
+    }
+
+    // 11) 자동 재생
+    function toggleAutoPlay() {
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+        btnAutoPlay.classList.remove('active');
+        btnAutoPlay.innerHTML = "▶ 자동 넘김 (4초)";
+      } else {
+        btnAutoPlay.classList.add('active');
+        btnAutoPlay.innerHTML = "⏸ 자동 넘김 일시정지";
+        if (filteredWords.length > 0) {
+          speakText(filteredWords[currentIndex].word);
+        }
+        autoPlayInterval = setInterval(() => {
+          goNext();
+          if (filteredWords.length > 0) {
+            speakText(filteredWords[currentIndex].word);
+          }
+        }, 4000);
+      }
+    }
+
+    // 12) A4 낱장 카드 인쇄
+    function prepareAndPrint() {
+      const printSection = document.getElementById('print-section');
+      printSection.innerHTML = '';
+
+      const wordsToPrint = filteredWords.length > 0 ? filteredWords : allWords;
+      const pageSize = 8;
+      const pageCount = Math.ceil(wordsToPrint.length / pageSize);
+
+      for (let p = 0; p < pageCount; p++) {
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'print-page';
+
+        const pageItems = wordsToPrint.slice(p * pageSize, (p + 1) * pageSize);
+        pageItems.forEach(item => {
+          const cardItem = document.createElement('div');
+          cardItem.className = 'print-card-item';
+          cardItem.innerHTML = `
+            <div class="print-card-top">
+              <span>${item.category}</span>
+              <span>${item.hasBatchim ? '[받침 있음]' : '[받침 없음]'}</span>
+            </div>
+            <div class="print-card-center">
+              <div class="print-emoji">${item.emoji}</div>
+              <div class="print-word">${item.word}</div>
+            </div>
+            <div class="print-card-bottom">
+              <div>💡 ${item.meaning}</div>
+              <div class="print-example">📖 ${item.example}</div>
+            </div>
+          `;
+          pageDiv.appendChild(cardItem);
+        });
+
+        printSection.appendChild(pageDiv);
+      }
+
+      window.print();
+    }
+
+    // ========================================================
+    // 13. 이벤트 리스너 등록
+    // ========================================================
+    cardStage.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      toggleFlip();
+    });
+
+    hintTriggerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleHint();
+    });
+
+    hideHintBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleHint();
+    });
+
+    btnPrev.addEventListener('click', goPrev);
+    btnNext.addEventListener('click', goNext);
+    btnShuffle.addEventListener('click', shuffleWords);
+    btnAutoPlay.addEventListener('click', toggleAutoPlay);
+    btnResetOrder.addEventListener('click', () => applyFilters());
+    btnPrint.addEventListener('click', prepareAndPrint);
+
+    ttsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (filteredWords.length > 0) {
+        speakText(filteredWords[currentIndex].word);
+      }
+    });
+
+    backTtsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (filteredWords.length > 0) {
+        const item = filteredWords[currentIndex];
+        speakText(`${item.word}! ${item.example}`);
+      }
+    });
+
+    favoriteToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleFavorite();
+    });
+
+    categoryChips.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip-btn');
+      if (!chip) return;
+
+      categoryChips.querySelectorAll('.chip-btn').forEach(btn => btn.classList.remove('active'));
+      chip.classList.add('active');
+
+      selectedCategory = chip.getAttribute('data-category');
+      applyFilters();
+    });
+
+    function updateBatchimButtons(activeBtn, type) {
+      [btnBatchimAll, btnBatchimNone, btnBatchimHas].forEach(btn => btn.classList.remove('active'));
+      activeBtn.classList.add('active');
+      selectedBatchim = type;
+      applyFilters();
+    }
+
+    btnBatchimAll.addEventListener('click', () => updateBatchimButtons(btnBatchimAll, 'ALL'));
+    btnBatchimNone.addEventListener('click', () => updateBatchimButtons(btnBatchimNone, 'NONE'));
+    btnBatchimHas.addEventListener('click', () => updateBatchimButtons(btnBatchimHas, 'HAS'));
+
+    btnFavorites.addEventListener('click', () => {
+      showFavoritesOnly = !showFavoritesOnly;
+      btnFavorites.classList.toggle('active', showFavoritesOnly);
+      applyFilters();
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      applyFilters();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowLeft') {
+        goPrev();
+      } else if (e.key === 'ArrowRight') {
+        goNext();
+      } else if (e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        toggleFlip();
+      } else if (e.key === 'h' || e.key === 'H') {
+        toggleHint();
+      } else if (e.key === 'Enter') {
+        if (filteredWords.length > 0) {
+          speakText(filteredWords[currentIndex].word);
+        }
+      }
+    });
+
+    renderCard();
+  </script>
+</body>
+</html>
